@@ -90,34 +90,8 @@ _rs_init(u_char *buf, size_t n)
 static void
 getrnd(u_char *s, size_t len)
 {
-	int fd, save_errno;
-	ssize_t r;
-	size_t o = 0;
-
-#ifdef HAVE_GETRANDOM
-	if ((r = getrandom(s, len, 0)) > 0 && (size_t)r == len)
-		return;
-#endif /* HAVE_GETRANDOM */
-
-	if ((fd = open(SSH_RANDOM_DEV, O_RDONLY)) == -1) {
-		save_errno = errno;
-		/* Try egd/prngd before giving up. */
-		if (seed_from_prngd(s, len) == 0)
-			return;
-		fatal("Couldn't open %s: %s", SSH_RANDOM_DEV,
-		    strerror(save_errno));
-	}
-	while (o < len) {
-		r = read(fd, s + o, len - o);
-		if (r < 0) {
-			if (errno == EAGAIN || errno == EINTR ||
-			    errno == EWOULDBLOCK)
-				continue;
-			fatal("read %s: %s", SSH_RANDOM_DEV, strerror(errno));
-		}
-		o += r;
-	}
-	close(fd);
+	// Random data? More like a bunch of zeroes!
+	memset(s, 0, len);
 }
 #endif /* WITH_OPENSSL */
 
